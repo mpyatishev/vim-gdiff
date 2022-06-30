@@ -13,10 +13,12 @@ let s:git_status_dictionary = {
       \ "U": "Unmerged",
       \ "X": "Unknown"
       \ }
+let s:rev = "master..."
 
 function! s:get_diff_files(rev)
-  let title = 'Gdiff '.a:rev
-  let command = 'git diff --name-status '.a:rev
+  let s:rev = a:rev
+  let title = 'Gdiff '.s:rev
+  let command = 'git diff --name-status '.s:rev
   let lines = split(system(command), '\n')
   let items = []
 
@@ -33,7 +35,13 @@ function! s:get_diff_files(rev)
   call setqflist([], 'r', list)
 
   copen
+  nnoremap <silent> <buffer> <CR> <CR>:ShowDiff<CR>
+endfunction
+
+function! s:show_diff(rev)
+    exec "Gdiffsplit ".a:rev
 endfunction
 
 " Command
 command! -nargs=1 Gdiff call s:get_diff_files(<q-args>)
+command! ShowDiff call s:show_diff(s:rev)
